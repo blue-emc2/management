@@ -17,6 +17,14 @@ export const helloWorld = functions.https.onRequest((request, response) => {
   response.send('Hello from Firebase!');
 });
 
+export const initialize = functions.https.onRequest(async (req, res) => {
+  const ref = db.collection('/management').doc();
+
+  await ref.set({ state: 0 }).then(() => {
+    res.status(200).send(ref.toString());
+  });
+});
+
 export const createQuestion = functions.https.onRequest(async (req, res) => {
   const { question } = req.body;
   const ref = db.collection('/questions');
