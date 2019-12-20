@@ -13,12 +13,9 @@ import admin from 'firebase-admin';
 // }
 
 // 最新のdocを1件返す
-const getManagementLastDocQuery = () =>
-  admin
-    .firestore()
-    .collection('/management')
-    .orderBy('createdAt', 'desc')
-    .limit(1);
+const getManagement = () => {
+  return admin.firestore().collection('/management');
+};
 
 admin.initializeApp();
 
@@ -43,7 +40,7 @@ export const initialize = functions.https.onRequest(async (req, res) => {
 // 問題を作る
 export const createQuestion = functions.https.onRequest(async (req, res) => {
   const { question } = req.body;
-  const ref = getManagementLastDocQuery();
+  const ref = getManagement();
   const docs = await ref.get().then(snapshot => {
     return snapshot.docs;
   });
@@ -56,7 +53,7 @@ export const createQuestion = functions.https.onRequest(async (req, res) => {
 // 状態更新
 export const updateState = functions.https.onRequest(async (req, res) => {
   const { state } = req.body;
-  const ref = getManagementLastDocQuery();
+  const ref = getManagement();
   const docs = await ref.get().then(snapshot => {
     return snapshot.docs;
   });
@@ -69,7 +66,7 @@ export const updateState = functions.https.onRequest(async (req, res) => {
 // ユーザー登録
 export const entry = functions.https.onRequest(async (req, res) => {
   const { name } = req.body;
-  const ref = getManagementLastDocQuery();
+  const ref = getManagement();
   const docs = await ref.get().then(snapshot => {
     return snapshot.docs;
   });
@@ -88,7 +85,7 @@ export const entry = functions.https.onRequest(async (req, res) => {
 
 // ユーザー取得
 export const users = functions.https.onRequest(async (req, res) => {
-  const ref = getManagementLastDocQuery();
+  const ref = getManagement();
   const snapshot = await ref.get();
 
   const data = snapshot.docs.map(doc => {
