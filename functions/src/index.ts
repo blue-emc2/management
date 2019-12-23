@@ -1,5 +1,5 @@
 import * as functions from 'firebase-functions';
-import admin from 'firebase-admin';
+import admin, { firestore } from 'firebase-admin';
 
 // import { User } from './models/user';
 
@@ -15,6 +15,20 @@ import admin from 'firebase-admin';
 // 最新のdocを1件返す
 const getManagement = () => {
   return admin.firestore().collection('/management');
+};
+
+const getFirstDoc = (
+  ref: firestore.CollectionReference,
+): Promise<firestore.QueryDocumentSnapshot> => {
+  const doc = ref
+    .orderBy('createdAt', 'desc')
+    .limit(1)
+    .get()
+    .then(snapshot => {
+      return snapshot.docs[0];
+    });
+
+  return doc;
 };
 
 admin.initializeApp();
@@ -101,4 +115,19 @@ export const users = functions.https.onRequest(async (req, res) => {
   } else {
     res.status(404);
   }
+});
+
+// 回答登録
+export const addAnswer = functions.https.onRequest(async (req, res) => {
+  const { name, answer } = req.body;
+  const ref = getManagement();
+  const doc = await getFirstDoc(ref);
+
+  await doc.ref
+    .update({
+      users: admin.firestore.FieldValue.arrayUnion({ name, answer }),
+    })
+    .then(value => {
+      res.status(200).send(value);
+    });
 });
