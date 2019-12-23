@@ -100,21 +100,15 @@ export const entry = functions.https.onRequest(async (req, res) => {
 // ユーザー取得
 export const users = functions.https.onRequest(async (req, res) => {
   const ref = getManagement();
-  const snapshot = await ref.get();
-
-  const data = snapshot.docs.map(doc => {
-    if (doc.exists) {
-      return doc.data().users;
-    }
-
-    return null;
-  });
-
-  if (data) {
-    res.status(200).send({ data });
+  const snapshot = await getFirstDoc(ref);
+  let r = null;
+  if (snapshot.exists) {
+    r = snapshot.data().users;
   } else {
     res.status(404);
   }
+
+  res.status(200).send({ data: r });
 });
 
 // 回答登録
