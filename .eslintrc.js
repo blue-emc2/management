@@ -121,6 +121,7 @@ module.exports = {
       },
     ],
     'react/prop-types': 'off',
+    'react/no-unescaped-entities': 'off',
 
     // react hooks
     'react-hooks/rules-of-hooks': 'error',
