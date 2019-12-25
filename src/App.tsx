@@ -1,6 +1,7 @@
 import React from 'react';
-import { Card, Button, Segment, Container, Form } from 'semantic-ui-react';
+import { Segment, Container, Form } from 'semantic-ui-react';
 import './App.css';
+import EntryList from 'components/EntryList';
 
 const App: React.FC = () => {
   return (
@@ -25,17 +26,7 @@ const App: React.FC = () => {
           </Form>
         </Segment>
         <Segment>
-          <Card>
-            <Card.Content>
-              <Card.Header>参加者名</Card.Header>
-              <Card.Description>
-                <strong>ここに回答を表示</strong>
-              </Card.Description>
-            </Card.Content>
-            <Card.Content extra>
-              <Button basic>回答を開ける</Button>
-            </Card.Content>
-          </Card>
+          <EntryList />
         </Segment>
       </Container>
     </div>
