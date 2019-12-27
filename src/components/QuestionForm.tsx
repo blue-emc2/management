@@ -1,11 +1,16 @@
-import React, { FC } from 'react';
+import React, { FC, SyntheticEvent } from 'react';
 import { Form } from 'semantic-ui-react';
 
-const QuestionForm: FC = () => {
+type Props = {
+  handleClick?: (e: SyntheticEvent) => void;
+  loading?: boolean;
+};
+
+const QuestionForm: FC<Props> = ({ handleClick, loading }) => {
   return (
-    <Form>
+    <Form loading={loading}>
       <Form.Group>
-        <Form.Button basic size="big" floated="left">
+        <Form.Button basic size="big" floated="left" onClick={handleClick}>
           はじめる
         </Form.Button>
       </Form.Group>
