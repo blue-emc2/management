@@ -38,17 +38,19 @@ export const helloWorld = functions.https.onRequest((request, response) => {
 });
 
 // 保存先の初期化
-export const initialize = functions.https.onRequest(async (req, res) => {
+export const initialize = functions.https.onCall(async () => {
   const ref = admin
     .firestore()
     .collection('/management')
     .doc();
 
-  await ref
+  const result = await ref
     .set({ state: 0, createdAt: admin.firestore.Timestamp.now(), users: [] })
-    .then(() => {
-      res.status(200).send('OK'); // TODO: 後でよしなにする
+    .then(value => {
+      return value; // res.status(200).send('OK'); // TODO: 後でよしなにする
     });
+
+  return result;
 });
 
 // 問題を作る
