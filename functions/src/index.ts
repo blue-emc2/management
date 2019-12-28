@@ -55,10 +55,10 @@ export const initialize = functions.https.onCall(async () => {
 
 // 問題を作る
 export const createQuestion = functions.https.onCall(async data => {
-  const { question } = data.question;
+  const question = data;
   const ref = getManagement();
   const doc = await getFirstDoc(ref);
-  const r = await doc.ref.update({ question }).then(value => {
+  const r = await doc.ref.update(question).then(value => {
     return value; // TODO: エラー処理を後でよしなにする
   });
 
