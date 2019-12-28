@@ -31,7 +31,8 @@ const getFirstDoc = (
   return doc;
 };
 
-admin.initializeApp();
+const app = admin.initializeApp();
+const db = app.firestore();
 
 export const helloWorld = functions.https.onRequest((request, response) => {
   response.send('Hello from Firebase!');
@@ -39,11 +40,7 @@ export const helloWorld = functions.https.onRequest((request, response) => {
 
 // 保存先の初期化
 export const initialize = functions.https.onCall(async () => {
-  const ref = admin
-    .firestore()
-    .collection('/management')
-    .doc();
-
+  const ref = db.collection('/management').doc();
   const result = await ref
     .set({ state: 0, createdAt: admin.firestore.Timestamp.now(), users: [] })
     .then(value => {
