@@ -8,7 +8,12 @@ import * as serviceWorker from './serviceWorker';
 import 'semantic-ui-css/semantic.min.css';
 import firebaseConfig from './firebase-config';
 
-firebase.initializeApp(firebaseConfig);
+const app = firebase.initializeApp(firebaseConfig);
+
+if (process.env.NODE_ENV === 'development') {
+  // ローカルのエミュレーターを動かすには.env.localではダメっぽい？
+  app.functions().useFunctionsEmulator('http://localhost:5001');
+}
 
 ReactDOM.render(
   <FirebaseApp>
