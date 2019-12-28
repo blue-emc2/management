@@ -12,9 +12,12 @@ import admin, { firestore } from 'firebase-admin';
 //   AnswerFinished,
 // }
 
+const app = admin.initializeApp();
+const db = app.firestore();
+
 // 最新のdocを1件返す
 const getManagement = () => {
-  return admin.firestore().collection('/management');
+  return db.collection('/management');
 };
 
 const getFirstDoc = (
@@ -26,13 +29,13 @@ const getFirstDoc = (
     .get()
     .then(snapshot => {
       return snapshot.docs[0];
+    })
+    .catch(() => {
+      throw new functions.https.HttpsError('not-found', 'not found document');
     });
 
   return doc;
 };
-
-const app = admin.initializeApp();
-const db = app.firestore();
 
 export const helloWorld = functions.https.onRequest((request, response) => {
   response.send('Hello from Firebase!');
@@ -44,23 +47,22 @@ export const initialize = functions.https.onCall(async () => {
   const result = await ref
     .set({ state: 0, createdAt: admin.firestore.Timestamp.now(), users: [] })
     .then(value => {
-      return value; // res.status(200).send('OK'); // TODO: 後でよしなにする
+      return value; // TODO: エラー処理を後でよしなにする
     });
 
   return result;
 });
 
 // 問題を作る
-export const createQuestion = functions.https.onRequest(async (req, res) => {
-  const { question } = req.body;
+export const createQuestion = functions.https.onCall(async data => {
+  const { question } = data.question;
   const ref = getManagement();
-  const docs = await ref.get().then(snapshot => {
-    return snapshot.docs;
+  const doc = await getFirstDoc(ref);
+  const r = await doc.ref.update({ question }).then(value => {
+    return value; // TODO: エラー処理を後でよしなにする
   });
 
-  docs[0].ref.set({ question }, { merge: true }).then(() => {
-    res.status(200).send('OK!'); // TODO: 後でよしなにする
-  });
+  return r;
 });
 
 // 状態更新
