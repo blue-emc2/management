@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import { Segment, Container } from 'semantic-ui-react';
 import './App.css';
-import EntryList from 'components/EntryList';
 import QuestionForm from 'components/QuestionForm';
+import EntryMain from 'components/EntryMain';
 
 const App: FC = () => {
   return (
@@ -12,7 +12,7 @@ const App: FC = () => {
           <QuestionForm />
         </Segment>
         <Segment>
-          <EntryList />
+          <EntryMain />
         </Segment>
       </Container>
     </div>
