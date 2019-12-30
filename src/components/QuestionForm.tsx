@@ -1,14 +1,48 @@
-import React, { FC, SyntheticEvent } from 'react';
-import { Form } from 'semantic-ui-react';
+import React, { FC, SyntheticEvent, useState, useContext, useRef } from 'react';
+import { Form, Button } from 'semantic-ui-react';
+import { FirebaseContext } from 'contexts';
 
-type Props = {
-  handleClick?: (e: SyntheticEvent) => void;
-  loading?: boolean;
-};
+const QuestionForm: FC = () => {
+  const [loading, setLoading] = useState(false);
+  const [text, setText] = useState('');
+  const functionsRef = useRef(useContext(FirebaseContext));
+  const { f } = functionsRef.current;
+  if (!f) throw new Error('Functions is not initialized');
 
-const QuestionForm: FC<Props> = ({ handleClick, loading }) => {
+  const handleSubmit = (e: SyntheticEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    const createQuestion = f.httpsCallable('createQuestion');
+    createQuestion({ question: text })
+      .then(result => {
+        console.log(result.data);
+      })
+      .catch(err => {
+        console.log(err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const handleClick = (e: SyntheticEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    const initialize = f.httpsCallable('initialize');
+    initialize()
+      .then(result => {
+        console.log(result.data);
+      })
+      .catch(err => {
+        console.log(err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
   return (
-    <Form loading={loading}>
+    <Form loading={loading} onSubmit={handleSubmit}>
       <Form.Group>
         <Form.Button basic size="big" floated="left" onClick={handleClick}>
           はじめる
@@ -18,10 +52,13 @@ const QuestionForm: FC<Props> = ({ handleClick, loading }) => {
         <Form.TextArea
           width={12}
           placeholder="パンはパンでも食べられないパンはなーんだ"
+          onChange={(event: React.FormEvent<HTMLTextAreaElement>) =>
+            setText(event.currentTarget.value)
+          }
         />
-        <Form.Button basic size="big" width={2}>
+        <Button type="submit" basic size="big" width={2}>
           送信
-        </Form.Button>
+        </Button>
       </Form.Group>
     </Form>
   );
