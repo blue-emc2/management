@@ -1,10 +1,11 @@
 import React, { FC, SyntheticEvent, useState, useContext, useRef } from 'react';
-import { Form, Button } from 'semantic-ui-react';
+import { Form, Button, Message } from 'semantic-ui-react';
 import { FirebaseContext } from 'contexts';
 
 const QuestionForm: FC = () => {
   const [loading, setLoading] = useState(false);
   const [text, setText] = useState('');
+  const [error, setError] = useState<Error | null>(null);
   const functionsRef = useRef(useContext(FirebaseContext));
   const { f } = functionsRef.current;
   if (!f) throw new Error('Functions is not initialized');
@@ -16,9 +17,10 @@ const QuestionForm: FC = () => {
     createQuestion({ question: text })
       .then(result => {
         console.log(result.data);
+        setError(null);
       })
-      .catch(err => {
-        console.log(err);
+      .catch((err: Error) => {
+        setError(err);
       })
       .finally(() => {
         setLoading(false);
@@ -32,9 +34,10 @@ const QuestionForm: FC = () => {
     initialize()
       .then(result => {
         console.log(result.data);
+        setError(null);
       })
       .catch(err => {
-        console.log(err);
+        setError(err);
       })
       .finally(() => {
         setLoading(false);
@@ -60,6 +63,11 @@ const QuestionForm: FC = () => {
           送信
         </Button>
       </Form.Group>
+      {error !== null && (
+        <Message color="red">
+          <Message.Content>{error.stack}</Message.Content>
+        </Message>
+      )}
     </Form>
   );
 };
