@@ -1,22 +1,41 @@
-import React, { FC } from 'react';
+import React, { FC, SyntheticEvent } from 'react';
 import { Card, Button } from 'semantic-ui-react';
 import { Users } from 'user';
+import { times } from 'lodash';
 
-const entryList = [1, 2, 3, 4, 5, 6];
+interface CardProps {
+  opend: boolean;
+  id: number;
+}
+
+const cardList: CardProps[] = [];
+times(6, (i: number) => {
+  cardList.push({ id: i, opend: false });
+});
 
 const EntryList: FC<Users> = ({ userList }) => {
+  const handleOpen = (e: SyntheticEvent) => {
+    e.preventDefault();
+  };
+
   return (
     <Card.Group centered>
-      {entryList.map(i => (
-        <Card key={i}>
+      {cardList.map((props, i) => (
+        <Card key={props.id}>
           <Card.Content>
-            <Card.Header>{userList[i].name}: 参加者名</Card.Header>
-            <Card.Description>
-              <strong>{userList[i].answer}ここに回答を表示</strong>
-            </Card.Description>
+            <Card.Header>
+              参加者：{userList[i] ? userList[i].name : ''}
+            </Card.Header>
           </Card.Content>
           <Card.Content extra>
-            <Button basic>回答を開ける</Button>
+            <Button basic onClick={handleOpen}>
+              回答を開ける
+            </Button>
+            <Card.Description>
+              <strong>
+                {userList[i] ? userList[i].answer : ''}ここに回答を表示
+              </strong>
+            </Card.Description>
           </Card.Content>
         </Card>
       ))}
