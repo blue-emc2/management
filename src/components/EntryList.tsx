@@ -1,6 +1,6 @@
-import React, { FC, SyntheticEvent } from 'react';
+import React, { FC, SyntheticEvent, useState } from 'react';
 import { Card, Button } from 'semantic-ui-react';
-import { Users } from 'user';
+import { Users, User } from 'user';
 import { times } from 'lodash';
 
 interface CardProps {
@@ -8,34 +8,52 @@ interface CardProps {
   id: number;
 }
 
-const cardList: CardProps[] = [];
+const list: CardProps[] = [];
 times(6, (i: number) => {
-  cardList.push({ id: i, opend: false });
+  list.push({ id: i, opend: false });
 });
 
 const EntryList: FC<Users> = ({ userList }) => {
-  const handleOpen = (e: SyntheticEvent) => {
+  const [cardList, setCardList] = useState(list);
+  const handleOpen = (e: SyntheticEvent, user: User, card: CardProps) => {
     e.preventDefault();
+    if (user === undefined) return;
+
+    if (user.answer !== undefined) {
+      cardList[card.id].opend = true;
+      // cardListを分割して入れ直す必要がある（値の変更を検知できないため）
+      setCardList([...cardList]);
+    }
+  };
+
+  const anserOpenButton = (card: CardProps, user: User) => {
+    return (
+      <Button basic onClick={e => handleOpen(e, user, card)} key={card.id}>
+        回答を開ける
+      </Button>
+    );
+  };
+
+  const answer = (user: User) => {
+    return (
+      <Card.Description>
+        <strong>ここに回答を表示：{user.answer ? user.answer : ''}</strong>
+      </Card.Description>
+    );
   };
 
   return (
     <Card.Group centered>
       {cardList.map((props, i) => (
-        <Card key={props.id}>
+        <Card key={`card_${props.id}`}>
           <Card.Content>
             <Card.Header>
               参加者：{userList[i] ? userList[i].name : ''}
             </Card.Header>
           </Card.Content>
           <Card.Content extra>
-            <Button basic onClick={handleOpen}>
-              回答を開ける
-            </Button>
-            <Card.Description>
-              <strong>
-                {userList[i] ? userList[i].answer : ''}ここに回答を表示
-              </strong>
-            </Card.Description>
+            {props.opend ? answer(userList[i]) : null}
+            {!props.opend ? anserOpenButton(props, userList[i]) : null}
           </Card.Content>
         </Card>
       ))}
