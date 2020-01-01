@@ -99,17 +99,15 @@ export const entry = functions.https.onRequest(async (req, res) => {
 });
 
 // ユーザー取得
-export const users = functions.https.onRequest(async (req, res) => {
+export const users = functions.https.onCall(async () => {
   const ref = getManagement();
   const snapshot = await getFirstDoc(ref);
   let r = null;
   if (snapshot.exists) {
     r = snapshot.data().users;
-  } else {
-    res.status(404);
   }
 
-  res.status(200).send({ data: r });
+  return r;
 });
 
 // 回答登録
