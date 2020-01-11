@@ -79,23 +79,19 @@ export const updateState = functions.https.onRequest(async (req, res) => {
 });
 
 // ユーザー登録
-export const entry = functions.https.onRequest(async (req, res) => {
-  const { name } = req.body;
-  const ref = getManagement();
-  const docs = await ref.get().then(snapshot => {
-    return snapshot.docs;
-  });
+export const entry = functions.https.onCall(async data => {
+  const { name } = data;
 
   // TODO: 人数制限
   // TODO: name重複チェック
 
-  docs[0].ref
-    .update({
-      users: admin.firestore.FieldValue.arrayUnion({ name }),
-    })
-    .then(() => {
-      res.status(200).send(`OK:${name}`); // TODO: 後でよしなにする
-    });
+  const ref = getManagement();
+  const doc = await getFirstDoc(ref);
+  const r = await doc.ref.update({
+    users: admin.firestore.FieldValue.arrayUnion({ name }),
+  });
+
+  return r;
 });
 
 // ユーザー取得
