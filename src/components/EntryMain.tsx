@@ -1,9 +1,17 @@
 import React, { FC, SyntheticEvent, useContext, useRef, useState } from 'react';
-import { Button, Icon, Segment, Message } from 'semantic-ui-react';
+import {
+  Button,
+  Icon,
+  Segment,
+  Message,
+  Dimmer,
+  Loader,
+} from 'semantic-ui-react';
 import EntryList from 'components/EntryList';
 import { FirebaseContext } from 'contexts';
 
 const EntryMain: FC = () => {
+  const [loading, setLoading] = useState(false);
   const [userList, setUserList] = useState([]);
   const [error, setError] = useState<Error | null>(null);
   const functionsRef = useRef(useContext(FirebaseContext));
@@ -12,6 +20,7 @@ const EntryMain: FC = () => {
 
   const handleClick = (e: SyntheticEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     const users = f.httpsCallable('users');
     users()
@@ -21,11 +30,18 @@ const EntryMain: FC = () => {
       })
       .catch(err => {
         setError(err);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
   return (
     <>
+      <Dimmer active={loading} inverted>
+        <Loader content="Loading" />
+      </Dimmer>
+
       <Segment floated="right" basic>
         <Button icon color="olive" onClick={handleClick}>
           <Icon name="refresh" />
