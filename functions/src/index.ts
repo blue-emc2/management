@@ -107,16 +107,13 @@ export const users = functions.https.onCall(async () => {
 });
 
 // 回答登録
-export const addAnswer = functions.https.onRequest(async (req, res) => {
-  const { name, answer } = req.body;
+export const addAnswer = functions.https.onCall(async data => {
+  const { name, answer } = data;
   const ref = getManagement();
   const doc = await getFirstDoc(ref);
+  const r = await doc.ref.update({
+    users: admin.firestore.FieldValue.arrayUnion({ name, answer }),
+  });
 
-  await doc.ref
-    .update({
-      users: admin.firestore.FieldValue.arrayUnion({ name, answer }),
-    })
-    .then(value => {
-      res.status(200).send(value);
-    });
+  return r;
 });
