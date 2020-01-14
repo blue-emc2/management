@@ -65,6 +65,20 @@ export const createQuestion = functions.https.onCall(async data => {
   return r;
 });
 
+// 問題を取得する
+export const question = functions.https.onCall(async () => {
+  const ref = getManagement();
+  const snapshot = await getFirstDoc(ref);
+  let r = null;
+  if (snapshot.exists) {
+    r = snapshot.data().question;
+  }
+
+  // TODO: 問題文がなかった時の対応
+
+  return r;
+});
+
 // 状態更新
 export const updateState = functions.https.onRequest(async (req, res) => {
   const { state } = req.body;
@@ -102,6 +116,8 @@ export const users = functions.https.onCall(async () => {
   if (snapshot.exists) {
     r = snapshot.data().users;
   }
+
+  // TODO: ユーザーがいないときの対応
 
   return r;
 });
