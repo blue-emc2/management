@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import admin, { firestore } from 'firebase-admin';
 
-// import { User } from './models/user';
+import { User } from './models/user';
 
 // enum State {
 //   Standby = 0,
@@ -95,12 +95,20 @@ export const updateState = functions.https.onRequest(async (req, res) => {
 // ユーザー登録
 export const entry = functions.https.onCall(async data => {
   const { name } = data;
-
-  // TODO: 人数制限
-  // TODO: name重複チェック
-
   const ref = getManagement();
   const doc = await getFirstDoc(ref);
+
+  // name重複チェック
+  const users = doc.get('users');
+  if (users.some((obj: User) => obj.name === name)) {
+    throw new functions.https.HttpsError(
+      'already-exists',
+      'そのエントリー名は使えません',
+    );
+  }
+
+  // TODO: 人数制限
+
   const r = await doc.ref.update({
     users: admin.firestore.FieldValue.arrayUnion({ name }),
   });
