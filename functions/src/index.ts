@@ -71,10 +71,15 @@ export const question = functions.https.onCall(async () => {
   const snapshot = await getFirstDoc(ref);
   let r = null;
   if (snapshot.exists) {
-    r = snapshot.data().question;
+    r = snapshot.data().question as string;
   }
 
-  // TODO: 問題文がなかった時の対応
+  if (!r) {
+    throw new functions.https.HttpsError(
+      'not-found',
+      '問題文が作られるまでお待ち下さい',
+    );
+  }
 
   return r;
 });
