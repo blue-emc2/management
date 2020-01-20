@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions';
 import admin, { firestore } from 'firebase-admin';
 
+import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { User } from './models/user';
 
 // enum State {
@@ -12,6 +13,12 @@ import { User } from './models/user';
 //   AnswerFinished,
 // }
 
+const initializeSet = {
+  state: 0,
+  createdAt: admin.firestore.Timestamp.now(),
+  users: [],
+  question: '',
+};
 const app = admin.initializeApp();
 const db = app.firestore();
 
@@ -37,32 +44,21 @@ const getFirstDoc = (
   return doc;
 };
 
-export const helloWorld = functions.https.onRequest((request, response) => {
-  response.send('Hello from Firebase!');
-});
+// 問題を作る
+export const createQuestion = functions.https.onCall(async data => {
+  initializeSet.question = data.question;
 
-// 保存先の初期化
-export const initialize = functions.https.onCall(async () => {
   const ref = db.collection('/management').doc();
   const result = await ref
-    .set({ state: 0, createdAt: admin.firestore.Timestamp.now(), users: [] })
-    .then(value => {
-      return value; // TODO: エラー処理を後でよしなにする
+    .set(initializeSet)
+    .then(() => {
+      console.info('initialize ok');
+    })
+    .catch((err: Error) => {
+      throw new HttpsError('aborted', '初期化ができませんでした', err.message);
     });
 
   return result;
-});
-
-// 問題を作る
-export const createQuestion = functions.https.onCall(async data => {
-  const question = data;
-  const ref = getManagement();
-  const doc = await getFirstDoc(ref);
-  const r = await doc.ref.update(question).then(value => {
-    return value; // TODO: エラー処理を後でよしなにする
-  });
-
-  return r;
 });
 
 // 問題を取得する

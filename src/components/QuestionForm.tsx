@@ -27,30 +27,8 @@ const QuestionForm: FC = () => {
       });
   };
 
-  const handleClick = (e: SyntheticEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    const initialize = f.httpsCallable('initialize');
-    initialize()
-      .then(result => {
-        console.log(result.data);
-        setError(null);
-      })
-      .catch(err => {
-        setError(err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
-
   return (
     <Form loading={loading} onSubmit={handleSubmit}>
-      <Form.Group>
-        <Form.Button basic size="big" floated="left" onClick={handleClick}>
-          はじめる
-        </Form.Button>
-      </Form.Group>
       <Form.Group inline>
         <Form.TextArea
           width={12}
