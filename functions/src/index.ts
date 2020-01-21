@@ -108,7 +108,9 @@ export const entry = functions.https.onCall(async data => {
     );
   }
 
-  // TODO: 人数制限
+  if (users.length > 6) {
+    throw new HttpsError('already-exists', '募集は締め切りました');
+  }
 
   const r = await doc.ref.update({
     users: admin.firestore.FieldValue.arrayUnion({ name }),
