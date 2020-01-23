@@ -138,6 +138,15 @@ export const addAnswer = functions.https.onCall(async data => {
   const { name, answer } = data;
   const ref = getManagement();
   const doc = await getFirstDoc(ref);
+  // めちゃくちゃダサいけど配列内の要素のupdateの方法がわからないので仕方ない...
+  await doc.ref
+    .update({
+      users: admin.firestore.FieldValue.arrayRemove({ name }),
+    })
+    .then(() => {
+      console.info('remove success');
+    });
+
   const r = await doc.ref.update({
     users: admin.firestore.FieldValue.arrayUnion({ name, answer }),
   });
