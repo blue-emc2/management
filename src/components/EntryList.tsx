@@ -36,9 +36,9 @@ const EntryList: FC<Users> = ({ userList }) => {
 
   const answer = (user: User) => {
     return (
-      <Card.Description>
+      <Card.Header>
         <strong>{user.answer ? user.answer : ''}</strong>
-      </Card.Description>
+      </Card.Header>
     );
   };
 
