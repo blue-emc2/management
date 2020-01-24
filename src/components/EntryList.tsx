@@ -37,7 +37,7 @@ const EntryList: FC<Users> = ({ userList }) => {
   const answer = (user: User) => {
     return (
       <Card.Description>
-        <strong>ここに回答を表示：{user.answer ? user.answer : ''}</strong>
+        <strong>{user.answer ? user.answer : ''}</strong>
       </Card.Description>
     );
   };
