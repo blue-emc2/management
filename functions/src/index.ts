@@ -1,11 +1,9 @@
 import * as functions from 'firebase-functions';
 import admin, { firestore } from 'firebase-admin';
-
 import { HttpsError } from 'firebase-functions/lib/providers/https';
-// import { User } from './models/user';
-// import { firebaseConfig } from 'firebase-functions';
+import { Props } from './props';
 
-const initializeSet = {
+const initializeSet: Props = {
   createdAt: admin.firestore.Timestamp.now(),
   users: {},
   question: '',
@@ -93,7 +91,6 @@ export const entry = functions.https.onCall(async data => {
 
   // name重複チェック
   const count = doc.get('count');
-
   if (count > 6) {
     throw new HttpsError('already-exists', '募集は締め切りました');
   }
