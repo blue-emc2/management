@@ -2,22 +2,14 @@ import * as functions from 'firebase-functions';
 import admin, { firestore } from 'firebase-admin';
 
 import { HttpsError } from 'firebase-functions/lib/providers/https';
-import { User } from './models/user';
-
-// enum State {
-//   Standby = 0,
-//   JoinWaiting,
-//   JoinFinished,
-//   QuestionDeliver,
-//   AnswerWaiting,
-//   AnswerFinished,
-// }
+// import { User } from './models/user';
+// import { firebaseConfig } from 'firebase-functions';
 
 const initializeSet = {
-  state: 0,
   createdAt: admin.firestore.Timestamp.now(),
-  users: [],
+  users: {},
   question: '',
+  count: 0,
 };
 const app = admin.initializeApp();
 const db = app.firestore();
@@ -48,7 +40,7 @@ const getFirstDoc = (
 export const createQuestion = functions.https.onCall(async data => {
   initializeSet.question = data.question;
 
-  const ref = db.collection('/management').doc();
+  const ref = getManagement().doc();
   const result = await ref
     .set(initializeSet)
     .then(() => {
@@ -100,20 +92,23 @@ export const entry = functions.https.onCall(async data => {
   const doc = await getFirstDoc(ref);
 
   // name重複チェック
+  const count = doc.get('count');
+
+  if (count > 6) {
+    throw new HttpsError('already-exists', '募集は締め切りました');
+  }
+
   const users = doc.get('users');
-  if (users.some((obj: User) => obj.name === name)) {
+  if (Object.keys(users).some((obj: string) => obj === name)) {
     throw new functions.https.HttpsError(
       'already-exists',
       'そのエントリー名は使えません',
     );
   }
 
-  if (users.length > 6) {
-    throw new HttpsError('already-exists', '募集は締め切りました');
-  }
-
   const r = await doc.ref.update({
-    users: admin.firestore.FieldValue.arrayUnion({ name }),
+    count: firestore.FieldValue.increment(1),
+    [`users.${name}`]: '',
   });
 
   return r;
