@@ -70,19 +70,6 @@ export const question = functions.https.onCall(async () => {
   return r;
 });
 
-// 状態更新
-export const updateState = functions.https.onRequest(async (req, res) => {
-  const { state } = req.body;
-  const ref = getManagement();
-  const docs = await ref.get().then(snapshot => {
-    return snapshot.docs;
-  });
-
-  docs[0].ref.set({ state }, { merge: true }).then(() => {
-    res.status(200).send(`OK:${state}`); // TODO: 後でよしなにする
-  });
-});
-
 // ユーザー登録
 export const entry = functions.https.onCall(async data => {
   const { name } = data;
