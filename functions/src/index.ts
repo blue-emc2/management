@@ -59,7 +59,7 @@ export const question = functions.https.onCall(async () => {
   const snapshot = await getFirstDoc(ref);
   let r = null;
   if (snapshot.exists) {
-    r = snapshot.data().question as string;
+    r = snapshot.get('question');
   }
 
   if (!r) {
