@@ -12,7 +12,7 @@ import { FirebaseContext } from 'contexts';
 
 const EntryMain: FC = () => {
   const [loading, setLoading] = useState(false);
-  const [userList, setUserList] = useState([]);
+  const [userList, setUserList] = useState({});
   const [error, setError] = useState<Error | null>(null);
   const functionsRef = useRef(useContext(FirebaseContext));
   const { f } = functionsRef.current;

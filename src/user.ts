@@ -4,5 +4,5 @@ export interface User {
 }
 
 export interface Users {
-  userList: User[];
+  userList: { [key: string]: User };
 }
