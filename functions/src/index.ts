@@ -78,7 +78,7 @@ export const entry = functions.https.onCall(async data => {
 
   // name重複チェック
   const count = doc.get('count');
-  if (count > 6) {
+  if (count >= 6) {
     throw new HttpsError('already-exists', '募集は締め切りました');
   }
 
@@ -92,7 +92,7 @@ export const entry = functions.https.onCall(async data => {
 
   const r = await doc.ref.update({
     count: firestore.FieldValue.increment(1),
-    [`users.${name}`]: '',
+    [`users.${count}`]: { name },
   });
 
   return r;
