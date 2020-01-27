@@ -104,10 +104,10 @@ export const users = functions.https.onCall(async () => {
   const snapshot = await getFirstDoc(ref);
   let r = null;
   if (snapshot.exists) {
-    r = snapshot.data().users;
+    r = snapshot.get('users');
+  } else {
+    throw new HttpsError('not-found', '参加者がいません');
   }
-
-  // TODO: ユーザーがいないときの対応
 
   return r;
 });
