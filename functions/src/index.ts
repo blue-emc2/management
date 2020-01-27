@@ -90,12 +90,13 @@ export const entry = functions.https.onCall(async data => {
     );
   }
 
-  const r = await doc.ref.update({
+  await doc.ref.update({
     count: firestore.FieldValue.increment(1),
     [`users.${count}`]: { name },
   });
 
-  return r;
+  // client側ではidとして扱う
+  return count;
 });
 
 // ユーザー取得
@@ -114,12 +115,12 @@ export const users = functions.https.onCall(async () => {
 
 // 回答登録
 export const addAnswer = functions.https.onCall(async data => {
-  const { name, answer } = data;
+  const { name, answer, id } = data;
   const ref = getManagement();
   const doc = await getFirstDoc(ref);
 
   const r = await doc.ref.update({
-    [`users.${name}`]: answer,
+    [`users.${id}`]: { name, answer },
   });
 
   return r;
