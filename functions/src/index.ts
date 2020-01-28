@@ -82,8 +82,13 @@ export const entry = functions.https.onCall(async data => {
     throw new HttpsError('already-exists', '募集は締め切りました');
   }
 
-  const users = doc.get('users');
-  if (Object.keys(users).some((obj: string) => obj === name)) {
+  const names = Object.entries<{ name: string }>(doc.get('users')).map(
+    (value: [string, { name: string }]) => {
+      return value[1].name;
+    },
+  );
+
+  if (names.some((obj: string) => obj === name)) {
     throw new functions.https.HttpsError(
       'already-exists',
       'そのエントリー名は使えません',
