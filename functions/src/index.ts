@@ -8,6 +8,7 @@ const initializeSet: Props = {
   users: {},
   question: '',
   count: 0,
+  accepting: false,
 };
 const app = admin.initializeApp();
 const db = app.firestore();

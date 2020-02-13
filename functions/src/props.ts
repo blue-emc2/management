@@ -5,4 +5,5 @@ export type Props = {
   users: {};
   question: string;
   count: number;
+  accepting: boolean;
 };
