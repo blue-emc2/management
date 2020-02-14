@@ -8,7 +8,7 @@ const initializeSet: Props = {
   users: {},
   question: '',
   count: 0,
-  accepting: false,
+  accepting: true,
 };
 const app = admin.initializeApp();
 const db = app.firestore();
@@ -128,6 +128,17 @@ export const addAnswer = functions.https.onCall(async data => {
   const r = await doc.ref.update({
     [`users.${id}`]: { name, answer },
   });
+
+  return r;
+});
+
+// documentを更新する
+export const updateDocument = functions.https.onCall(async data => {
+  const { accepting } = data;
+  const ref = getManagement();
+  const doc = await getFirstDoc(ref);
+
+  const r = await doc.ref.update({ accepting });
 
   return r;
 });
