@@ -18,6 +18,8 @@ const EntryMain: FC = () => {
   const { f } = functionsRef.current;
   if (!f) throw new Error('Functions is not initialized');
 
+  const updateDocument = f.httpsCallable('updateDocument');
+
   const handleClick = (e: SyntheticEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -26,6 +28,22 @@ const EntryMain: FC = () => {
     users()
       .then(result => {
         setUserList(result.data);
+        setError(null);
+      })
+      .catch(err => {
+        setError(err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const handleFinishClick = (e: SyntheticEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    updateDocument({ accepting: false })
+      .then(() => {
         setError(null);
       })
       .catch(err => {
@@ -45,6 +63,9 @@ const EntryMain: FC = () => {
       <Segment floated="right" basic>
         <Button icon color="olive" onClick={handleClick}>
           <Icon name="refresh" />
+        </Button>
+        <Button icon color="red" onClick={handleFinishClick}>
+          <Icon name="stop" />
         </Button>
       </Segment>
       <EntryList userList={userList} />
