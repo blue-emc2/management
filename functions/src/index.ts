@@ -56,7 +56,7 @@ export const createQuestion = functions.https.onCall(async data => {
 export const question = functions.https.onCall(async () => {
   const ref = getManagement();
   const snapshot = await getFirstDoc(ref);
-  let r = null;
+  let r;
   if (snapshot.exists) {
     r = snapshot.data();
   }
@@ -124,6 +124,13 @@ export const addAnswer = functions.https.onCall(async data => {
   const { name, answer, id } = data;
   const ref = getManagement();
   const doc = await getFirstDoc(ref);
+
+  if (doc.exists) {
+    const accepting = doc.get('accepting');
+    if (accepting === false) {
+      throw new functions.https.HttpsError('out-of-range', '終了しました');
+    }
+  }
 
   const r = await doc.ref.update({
     [`users.${id}`]: { name, answer },
