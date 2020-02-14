@@ -58,17 +58,17 @@ export const question = functions.https.onCall(async () => {
   const snapshot = await getFirstDoc(ref);
   let r = null;
   if (snapshot.exists) {
-    r = snapshot.get('question');
+    r = snapshot.data();
   }
 
-  if (!r) {
+  if (!r || r.accepting === false) {
     throw new functions.https.HttpsError(
       'not-found',
       '問題文が作られるまでお待ち下さい',
     );
   }
 
-  return r;
+  return r.question;
 });
 
 // ユーザー登録
