@@ -38,6 +38,7 @@ const getFirstDoc = (
 // 問題を作る
 export const createQuestion = functions.https.onCall(async data => {
   initializeSet.question = data.question;
+  initializeSet.createdAt = admin.firestore.Timestamp.now();
 
   const ref = getManagement().doc();
   const result = await ref
